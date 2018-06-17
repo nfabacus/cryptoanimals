@@ -1,4 +1,4 @@
-pragma solidity 0.4.20;
+pragma solidity 0.4.23;
 
 
 contract CryptoAnimals {
@@ -45,7 +45,7 @@ contract CryptoAnimals {
             name: _name,
             dna: _dna
         });
-        uint256 newAnimalId = doggies.push(_doggy) - 1;
+        uint256 newAnimalId = animals.push(_animal) - 1;
         animalIdToOwner[newAnimalId] = msg.sender;
         numOfAnimals[msg.sender] = numOfAnimals[msg.sender] + 1;
 
