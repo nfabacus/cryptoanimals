@@ -19,7 +19,12 @@ contract CryptoAnimals {
     }
 
     // How to create an array of animals
-    Animal[] doggies;
+    Animal[] animals;
+
+    mapping (uint256 => address) private animalIdToOwner;
+    mapping (address => uint256) private numOfAnimals;
+
+    event AnimalCreated(uint256 _id, string _name, uint _age, bytes5 _dna);
 
     // Instantiate individual animals
     Animal animal1 = Animal({
@@ -33,4 +38,17 @@ contract CryptoAnimals {
         name: name2,
         dna: bytes5(0xffffffffff)
     });
+
+    function createAnimal(uint _age, string _name, bytes5 _dna) public {
+        Animal memory _animal = Animal({
+            age: _age,
+            name: _name,
+            dna: _dna
+        });
+        uint256 newAnimalId = doggies.push(_doggy) - 1;
+        animalIdToOwner[newAnimalId] = msg.sender;
+        numOfAnimals[msg.sender] = numOfAnimals[msg.sender] + 1;
+
+        AnimalCreated(newAnimalId, _name, _age, _dna);
+    }
 }
