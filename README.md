@@ -1,1 +1,3 @@
-# cryptodoggies-base
+# CryptoAnimals
+
+cryptodoggies
