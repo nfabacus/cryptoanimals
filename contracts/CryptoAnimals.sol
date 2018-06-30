@@ -1,54 +1,51 @@
 pragma solidity 0.4.19;
 
+import "./AccessControl.sol";
+import "./ERC721.sol";
+import "./SafeMath.sol";
 
-contract CryptoAnimals {
+contract DetailedERC721 is ERC721 {
+    function name() public view returns (string _name);
+    function symbol() public view returns (string _symbol);
+}
 
-    uint age = 10;
-    uint maxAge = age * 5;
-    uint minAge = age - 5;
-    uint ultraAge = age ** 2;
-    uint modAge = age % 2;
+contract CryptoAnimals is AccessControl, DetailedERC721 {
+    using SafeMath for unit256;
 
-    string name = "Doug";
-    string name2 = "Karl";
+    event tokenCreated(
+        uint256 tokenId,
+        string name,
+        bytes5 dna,
+        uint256 price,
+        address owner
+    );
+    event TokenSold(
+        uint256 indexed tokenId,
+        string name,
+        bytes5 dna,
+        uint256 sellingPrice,
+        uint256 newPrice,
+        address indexed oldOwner,
+        address indexed newOwner
+    );
+
+    mapping (uint256 => address) private tokenIdToOwner;
+    mapping (uint256 => uint256) private tokenIdToPrice;
+    mapping (address => uint256) private ownershipTokenCount;
+    mapping (uint256 => address) private tokenIdToApproved;
 
     struct Animal {
-        uint age;
         string name;
         bytes5 dna;
     }
 
-    // How to create an array of animals
-    Animal[] animals;
+    Animal[] private animals;
 
-    mapping (uint256 => address) private animalIdToOwner;
-    mapping (address => uint256) private numOfAnimals;
+    uint256 private startingPrice = 0.01 ether;
+    bool private erc721Enabled = false;
 
-    event AnimalCreated(uint256 _id, string _name, uint _age, bytes5 _dna);
-
-    // Instantiate individual animals
-    Animal animal1 = Animal({
-        age: age,
-        name: name,
-        dna: bytes5(0x000000000)
-    });
-
-    Animal animal2 = Animal({
-        age: maxAge,
-        name: name2,
-        dna: bytes5(0xffffffffff)
-    });
-
-    function createAnimal(uint _age, string _name, bytes5 _dna) public {
-        Animal memory _animal = Animal({
-            age: _age,
-            name: _name,
-            dna: _dna
-        });
-        uint256 newAnimalId = animals.push(_animal) - 1;
-        animalIdToOwner[newAnimalId] = msg.sender;
-        numOfAnimals[msg.sender] = numOfAnimals[msg.sender] + 1;
-
-        AnimalCreated(newAnimalId, _name, _age, _dna);
+    modifier onlyERC721() {
+        require(erc721Enabled);
+        _;
     }
 }
